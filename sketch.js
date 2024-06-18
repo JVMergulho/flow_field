@@ -1,6 +1,7 @@
 var inc = 0.01 // aleatoriedade
 var scl = 20  // escala -> tamanho do vetor
 var cols, rows
+var drawMode = 1;
 
 let startBtn
 let sliderInc
@@ -63,7 +64,7 @@ function draw() {
   // Define o tamanho e a cor do texto
   textSize(16);
   fill(0);
-
+  
   var inc = sliderInc.value() * 0.001
   var size = sliderSize.value()
   var scl = sliderScl.value()
@@ -71,6 +72,7 @@ function draw() {
   var rows = floor(height / scl)
   var s = sliderS.value()
   var b = sliderB.value()
+  var mouseFactor
 
   var yoff = 0
   for (var y = 0; y < rows; y++) {
@@ -83,6 +85,24 @@ function draw() {
       var h = map(angle, 0, TWO_PI, 0, 255)
       
       stroke(h,s, b)
+      
+      switch (drawMode) {
+      case 2:
+        var mouseXFactor = map(mouseX, 0, 400, 0.05, 1);
+        strokeWeight(8 * mouseXFactor)
+        break
+      case 3:
+        mouseFactor = dist(x * scl, y * scl, mouseX, mouseY)
+        mouseFactor = map(mouseFactor, 0, 400, 0, 7)
+        strokeWeight(mouseFactor)
+        break
+      case 4:
+        mouseFactor = dist(x * scl, y * scl, mouseX, mouseY)
+        mouseFactor = map(mouseFactor, 0, 400, 7, 0)
+        strokeWeight(mouseFactor)
+        break
+      }
+      
       xoff += inc
       push()
       translate(x * scl, y * scl)
@@ -96,4 +116,12 @@ function draw() {
 
 function reset() {
   noiseSeed(random(0, 100000))
+}
+
+function keyReleased() {
+  if (key == "s" || key == "S") saveCanvas(new Date().toISOString(), "png");
+  if (key == '1') drawMode = 1
+  if (key == '2') drawMode = 2
+  if (key == '3') drawMode = 3
+  if (key == '4') drawMode = 4
 }
